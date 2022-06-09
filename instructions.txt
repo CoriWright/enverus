@@ -1,0 +1,25 @@
+Welcome to the exercise for Enverus Data Science. These are some sample data
+manipulation tasks you would encounter as a developer on our team.
+
+
+For a test dataset, please use these Google playstore reviews here on Github.
+Using Python, please organize a project that accomplishes the following:
+
+
+    1. Filter the dataset to have only one entry per App name and remove apps with
+    invalid ratings
+    2. Add a new gross revenue feature for each app
+    3. Return the top 3 grossing apps in each category
+
+
+Please feel free to use libraries such as Pandas. You may reach out with any questions,
+but you may also make assumptions about edge cases and explain your reasoning to
+the team.
+
+If completed ahead of time, please submit your results before the intervew. Thanks!
+
+
+
+https://gist.githubusercontent.com/eriklangenborg-rs/69004085292bb1d09cd1e6d83ffa2b71/raw/ff824935ecf8ab690e6424e87fccfed1b33e20d9/googleplaystore.csv
+
+
