@@ -6,8 +6,9 @@ For a test dataset, please use these Google playstore reviews here on Github.
 Using Python, please organize a project that accomplishes the following:
 
 
-    1. Filter the dataset to have only one entry per App name and remove apps with
-    invalid ratings
+    1. Filter the dataset to have only 
+        a.one entry per App name and 
+        b.remove apps with invalid ratings
     2. Add a new gross revenue feature for each app
     3. Return the top 3 grossing apps in each category
 
