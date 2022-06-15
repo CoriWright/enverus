@@ -1,50 +1,61 @@
-import csv
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+import csv 
 import pandas as pd
 
 # Initial dataframe of entire file
-playstore = pd.read_csv("googleplaystore.csv")
+init_playstore = pd.read_csv("googleplaystore.csv")
+#print(init_playstore.dtypes)
 
 # De-duped the file
-one_app = playstore.drop_duplicates()
+one_app = init_playstore.drop_duplicates()
 
-#test 8 Ball Pool
-eightball = one_app[one_app["App"] == "8 Ball Pool"]
+# Aggregate all attributes and group by "App"
 aggregations = {
-    'Reviews':'max',
-    'Category': lambda x: x.value_counts().index[0]
-    
+    'Category': lambda x: x.value_counts().index[0] 
+    ,'Rating': 'max'
+    ,'Reviews':'max'
+    ,'Size': lambda x: x.value_counts().index[0]
+    ,'Installs':'max'
+    ,'Type': 'min'
+    ,'Price': 'max'
+    ,'Content Rating': 'min'  
+    ,'Genres': lambda x: x.value_counts().index[0]
+    ,'Last Updated': 'max'
+    ,'Current Ver': 'max'
+    ,'Android Ver': 'max' 
 }
-#eightball1 = eightball.groupby(['App','Rating','Size','Installs','Type','Price','Content Rating','Genres','Last Updated','Current Ver','Android Ver']).agg(aggregations)
-#print(eightball1)
-#eightball1 = eightball.groupby(['App','Rating','Size','Installs','Type','Price','Content Rating','Reviews','Genres','Last Updated','Current Ver','Android Ver'])
-#'Category'].apply(lambda x: x.value_counts().index[0]).reset_index()
-one_app_agg = one_app.groupby(['App','Rating','Size','Installs','Type','Price','Content Rating','Genres','Last Updated','Current Ver','Android Ver']).agg(aggregations)
-print(one_app_agg)
-app_count = one_app_agg.groupby('App').agg('count')
-print(app_count)
-app_count.to_csv("agg_count.csv")
-one_app_agg.to_csv("one_app_agg.csv")
 
+one_app_agg = one_app.groupby(['App']).agg(aggregations)
 
-'''
-# Aggregate out duplicate app names by frequency of Category and Largest number of Ratings
-aggregation_functions = {'Reviews': 'max'}
-one_app = one_app.groupby(one_app['App']).agg(aggregation_functions)
-print(one_app)
-one_app.to_csv("dedupe.csv")
+# app_count = one_app_agg.groupby('App').agg('count')
+# app_count.to_csv("agg_count.csv")
 
-remove_invalid_rating = one_app[(one_app["Rating"].notna())]
-print(remove_invalid_rating)xs
-print(one_app)
-one_app.to_csv("dedupe.csv")
+# remove invalid ratings
+playstore = one_app_agg[(one_app_agg["Rating"].notna())]
+playstore.to_csv("playstore_distinct.csv")
 
-'''
-#8 Ball Pool
+# add new gross revenue column
+# revenue = installs * price
+playstore['Price']= playstore['Price'].str.replace('$', '')
+playstore['Price'] = pd.to_numeric(playstore['Price'], errors='coerce')
 
+playstore['Installs']= playstore['Installs'].str.replace('+', '')
+playstore['Installs']= playstore['Installs'].str.replace(',', '')
+playstore['Installs'] = pd.to_numeric(playstore['Installs'], errors='coerce')
 
+revenue = playstore.Price * playstore.Price
+#print(revenue)
 
+playstore['Gross Revenue'] = revenue.where(playstore.Type == 'Paid', other=-revenue)
+#print(playstore)
+playstore.to_csv("playstore.csv")
 
+# Show top 3 grosssing
+#new = old[['A', 'C', 'D']].copy()
+#top3 = playstore[['App', 'Category','Gross Revenue']]
+top3 = playstore.filter(['App', 'Category','Gross Revenue'], axis=1)
+top3apps = top3.groupby('Category')['Gross Revenue'].nlargest(3)
+top3apps.to_csv("top3apps.csv")
 
-
-#filtered = filter(lambda p: 'Category' == "ART_AND_DESIGN", reader) 
-#csv.writer(open(r"playstore_filtered.csv",'w'),delimiter=',').writerows(filtered)
