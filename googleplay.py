@@ -45,7 +45,7 @@ playstore['Installs']= playstore['Installs'].str.replace('+', '')
 playstore['Installs']= playstore['Installs'].str.replace(',', '')
 playstore['Installs'] = pd.to_numeric(playstore['Installs'], errors='coerce')
 
-revenue = playstore.Price * playstore.Price
+revenue = playstore.Installs * playstore.Price
 #print(revenue)
 
 playstore['Gross Revenue'] = revenue.where(playstore.Type == 'Paid', other=-revenue)
